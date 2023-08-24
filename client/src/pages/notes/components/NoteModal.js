@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-
 // @mui material components
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -17,13 +16,15 @@ import MKTypography from "components/MKTypography";
 import MKInput from "components/MKInput";
 import { notesApi } from "shared/services/notesApi";
 import button from "assets/theme/components/button";
+import { toast } from "react-toastify";
 
 
-function SimpleModal({ show = false, setShow, note = { title: "", content: "" }, newNote = false }) {
+function NoteModal({ show = false, setShow, note = { title: "", content: "" }, newNote = false }) {
     const initialState = {
         charactersLeft: 200,
         titleHelper: "",
-        titleError: false
+        titleError: false,
+        
     }
     const [state, setState] = useState(initialState)
     const titleRef = useRef();
@@ -68,14 +69,18 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
             title: titleRef.current.value,
             content: contentRef.current.value
         })
-        if(response.ok){
+        if (response.ok) {
+            toast.success('Note Added')
             closeModal();
-        } else if(response.status == 409) {
+        } else if (response.status == 409) {
+            toast.error('Dublicate Title')
             setState({
                 ...state,
                 titleHelper: "duplicate title",
                 titleError: true
             })
+        } else {
+            toast.error('Couldn\'t add note!!')
         }
     }
 
@@ -84,13 +89,22 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
             title: titleRef.current.value,
             content: contentRef.current.value
         });
-        if(response.ok){
+        if (response.ok) {
+            toast.success('Note Updated')
             closeModal();
+        } else {
+            toast.error('Note couldn\'t be Updated');
         }
     }
 
     const deleteNote = async () => {
-        notesApi.delete(note._id);
+        const response = await notesApi.delete(note._id);
+        if(response.ok){
+            toast.success('Note Deleted');
+            closeModal();
+        } else {
+            toast.error('Note not deleted!!')
+        }
     }
 
     return (
@@ -99,7 +113,6 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                 <Modal open={show}
                     onClose={() => {
                         resetForm();
-                        closeModal();
                     }}
                     sx={{ display: "grid", placeItems: "center" }}>
                     <Slide direction="down" in={show} timeout={500}>
@@ -114,8 +127,8 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                         >
                             <MKBox display="flex" alginItems="center" justifyContent="space-between" p={2}>
                                 <MKInput
-                                    helperText = {state.titleHelper}
-                                    error = {state.titleError}
+                                    helperText={state.titleHelper}
+                                    error={state.titleError}
                                     sx={{
                                         width: "80%"
                                     }}
@@ -127,9 +140,15 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                                 <CloseIcon fontSize="medium" sx={{ cursor: "pointer" }} onClick={closeModal} />
                             </MKBox>
                             <Divider sx={{ my: 0 }} />
-                            <MKBox p={2} justifyContent="center"
-                                alignItems="center" display='flex'>
-                                <MKInput fullWidth color="secondary"
+                            <MKBox
+                                p={2}
+                                justifyContent="center"
+                                alignItems="center"
+                                display='flex'
+                            >
+                                <MKInput
+                                    fullWidth
+                                    color="secondary"
                                     helperText={`characters left : ${(state.charactersLeft) || (200 - note.content.length)}`}
                                     fontWeight="regular"
                                     multiline rows={5}
@@ -151,7 +170,7 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                                 <MKButton variant="gradient" color="error"
                                     onClick={() => {
                                         if (!newNote) {
-                                            deleteNote();
+                                            return deleteNote();
                                         }
                                         closeModal();
                                     }}
@@ -182,4 +201,4 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
     );
 }
 
-export default SimpleModal;
+export default NoteModal;

@@ -5,7 +5,7 @@ import NotesCard from 'pages/notes/components/NotesCard';
 import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect, useState } from 'react'
 import { notesApi } from 'shared/services/notesApi';
-import SimpleModal from './components/SimpleModal';
+import NoteModal from './components/NoteModal';
 
 
 const Notes = () => {
@@ -89,7 +89,7 @@ const Notes = () => {
                         ))
                     }
                 </Grid>
-                <SimpleModal show={state.showForm} setShow={setShow} note={state.note} newNote={state.newNote} />
+                <NoteModal show={state.showForm} setShow={setShow} note={state.note} newNote={state.newNote} />
                 <Fab
                     color="primary"
                     aria-label="add"
