@@ -48,7 +48,9 @@ const Notes = () => {
     }
 
     useEffect(() => {
-        getNotes();
+        if (state.showForm == false) {
+            getNotes();
+        }
     }, [state.showForm])
 
     return (
@@ -79,8 +81,10 @@ const Notes = () => {
                     </Grid>
                     {
                         state?.notes?.map((note) => (
-                            <Grid item xs={2} key={note._id}>
-                                <NotesCard note={note} setNote={setNote} />
+                            <Grid item xs={4} key={note._id}>
+                                <MKBox >
+                                    <NotesCard note={note} setNote={setNote} />
+                                </MKBox>
                             </Grid>
                         ))
                     }

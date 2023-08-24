@@ -5,7 +5,11 @@ import React from 'react'
 
 const NotesCard = ({ note, setNote }) => {
   return (
-    <Card>
+    <Card 
+      sx = {{
+  
+      }}
+    >
       <CardContent>
         <MKTypography variant="h5">{note.title}</MKTypography>
         <Divider />
@@ -15,7 +19,7 @@ const NotesCard = ({ note, setNote }) => {
         <MKButton 
         onClick={() => { 
           setNote(note);
-           }} >Edit</MKButton>
+           }}>Edit</MKButton>
       </CardActions>
     </Card>
   )

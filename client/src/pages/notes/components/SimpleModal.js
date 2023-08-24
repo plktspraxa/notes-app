@@ -16,9 +16,18 @@ import MKButton from "components/MKButton";
 import MKTypography from "components/MKTypography";
 import MKInput from "components/MKInput";
 import { notesApi } from "shared/services/notesApi";
+import button from "assets/theme/components/button";
 
 
 function SimpleModal({ show = false, setShow, note = { title: "", content: "" }, newNote = false }) {
+    const initialState = {
+        charactersLeft: 200,
+        titleHelper: "",
+        titleError: false
+    }
+    const [state, setState] = useState(initialState)
+    const titleRef = useRef();
+    const contentRef = useRef();
 
     const buttonLabel = {
         save() {
@@ -42,31 +51,42 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                 </>
         }
     }
-    const titleRef = useRef();
-    const contentRef = useRef();
 
-    const toggleModal = () => setShow(!show);
+    const closeModal = () => {
+        resetForm();
+        setShow(false)
+    };
 
     const resetForm = () => {
         titleRef.current.value = "";
         contentRef.current.value = "";
+        setState(initialState)
     }
 
     const addNote = async () => {
-        const not = await notesApi.create({
+        const response = await notesApi.create({
             title: titleRef.current.value,
             content: contentRef.current.value
         })
-            .then((res) => res.json())
-        console.log(not);
+        if(response.ok){
+            closeModal();
+        } else if(response.status == 409) {
+            setState({
+                ...state,
+                titleHelper: "duplicate title",
+                titleError: true
+            })
+        }
     }
 
     const updateNote = async () => {
-        const not = await notesApi.update(note._id, {
+        const response = await notesApi.update(note._id, {
             title: titleRef.current.value,
             content: contentRef.current.value
-        }).then((res) => res.json())
-        console.log(not);
+        });
+        if(response.ok){
+            closeModal();
+        }
     }
 
     const deleteNote = async () => {
@@ -79,7 +99,7 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                 <Modal open={show}
                     onClose={() => {
                         resetForm();
-                        toggleModal();
+                        closeModal();
                     }}
                     sx={{ display: "grid", placeItems: "center" }}>
                     <Slide direction="down" in={show} timeout={500}>
@@ -93,15 +113,38 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                             shadow="xl"
                         >
                             <MKBox display="flex" alginItems="center" justifyContent="space-between" p={2}>
-                                <MKInput sx={{
-                                    width: "80%"
-                                }} color="secondary" fontWeight="regular" defaultValue={note.title} inputRef={titleRef} />
-                                <CloseIcon fontSize="medium" sx={{ cursor: "pointer" }} onClick={toggleModal} />
+                                <MKInput
+                                    helperText = {state.titleHelper}
+                                    error = {state.titleError}
+                                    sx={{
+                                        width: "80%"
+                                    }}
+                                    color="secondary"
+                                    fontWeight="regular"
+                                    defaultValue={note.title}
+                                    inputRef={titleRef}
+                                />
+                                <CloseIcon fontSize="medium" sx={{ cursor: "pointer" }} onClick={closeModal} />
                             </MKBox>
                             <Divider sx={{ my: 0 }} />
                             <MKBox p={2} justifyContent="center"
                                 alignItems="center" display='flex'>
-                                <MKInput fullWidth color="secondary" fontWeight="regular" multiline rows={5} defaultValue={note.content} inputRef={contentRef} />
+                                <MKInput fullWidth color="secondary"
+                                    helperText={`characters left : ${(state.charactersLeft) || (200 - note.content.length)}`}
+                                    fontWeight="regular"
+                                    multiline rows={5}
+                                    inputProps={{ maxLength: 200 }}
+                                    defaultValue={note.content}
+                                    inputRef={contentRef}
+                                    onChange={(e) => {
+                                        const charLeft = (200 - e.target.value.length).toString();
+                                        console.log(state);
+                                        setState({
+                                            ...state,
+                                            charactersLeft: charLeft
+                                        })
+                                    }}
+                                />
                             </MKBox>
                             <Divider sx={{ my: 0 }} />
                             <MKBox display="flex" justifyContent="space-between" p={1.5}>
@@ -110,18 +153,11 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                                         if (!newNote) {
                                             deleteNote();
                                         }
-                                        toggleModal();
+                                        closeModal();
                                     }}
                                 >
                                     {
-                                        newNote ?
-                                            <>
-                                                Discard
-                                            </>
-                                            :
-                                            <>
-                                                Delete
-                                            </>
+                                        buttonLabel.delete()
                                     }
                                 </MKButton>
                                 <MKButton variant="gradient" color="info"
@@ -131,18 +167,10 @@ function SimpleModal({ show = false, setShow, note = { title: "", content: "" },
                                         } else {
                                             updateNote();
                                         }
-                                        toggleModal();
                                     }}
                                 >
                                     {
-                                        newNote ?
-                                            <>
-                                                Create
-                                            </>
-                                            :
-                                            <>
-                                                Save changes
-                                            </>
+                                        buttonLabel.save()
                                     }
                                 </MKButton>
                             </MKBox>

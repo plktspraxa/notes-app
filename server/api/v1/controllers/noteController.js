@@ -9,11 +9,18 @@ module.exports = {
         try {
             const userId = new mongoose.Types.ObjectId(req.userId)
             const note = { ...req.body, userId: userId };
+            note.content = note.content.slice(0, 200);
+            note.title = note.title.trimEnd();
             const newNote = await noteOperations.create(note);
             if (newNote && newNote._id) {
                 res.status(200).json({
                     note: newNote,
                     message: 'added'
+                })
+            } else if (newNote.code == 11000) {
+                res.status(409).json({
+                    error: 'duplicate title',
+                    message: 'not added'
                 })
             } else {
                 res.status(500).json({
@@ -52,9 +59,11 @@ module.exports = {
     async update(req, res) {
         logger.debug('notesController update() start');
         try {
-            const obj = req.body;
+            const note = req.body;
+            note.content = note.content.slice(0, 200);
+            note.title = note.title.trimEnd();
             const id = new mongoose.Types.ObjectId(req.params.id);
-            const doc = await noteOperations.update({ id: id, note: obj });
+            const doc = await noteOperations.update({ id: id, note: note });
             if (doc) {
                 res.status(200).json({
                     data: doc

@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const passwordValidator = require('password-validator');
 const emailValidator = require("email-validator");
-
+const logger = require("../../../utils/logger");
 
 const passwordSchema = new passwordValidator();
 passwordSchema
