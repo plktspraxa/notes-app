@@ -14,8 +14,8 @@ export const notesApi = {
         const response = await API.patch(APICALL_URL.NOTES.update + id, note);
         return response;
     },
-    async delete(id, note){
-        const response = await API.patch(APICALL_URL.NOTES.delete + id);
+    async delete(id){
+        const response = await API.delete(APICALL_URL.NOTES.delete + id);
         return response;
     },
 }

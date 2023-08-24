@@ -1,8 +1,10 @@
+const logger = require("../../utils/logger");
 const noteModel = require("../models/noteModel");
 const userOperations = require("./userOperations");
 
 module.exports = {
     async create(note){
+        logger.debug("notesOperations create");
         try{
             const newNote = await noteModel.create(note);
             const user = await userOperations.addNote(newNote);
@@ -12,6 +14,7 @@ module.exports = {
         }
     },
     async read(id){
+        logger.debug("notesOperations read");
         try{
             const note = await noteModel.findById(id);
             return note;
@@ -20,8 +23,8 @@ module.exports = {
         }
     },
     async update({id, note}){
+        logger.debug("notesOperations update");
         try{
-            console.log(note);
             const prevNote = await noteModel.findByIdAndUpdate(id, note);
             return prevNote;
         }catch(e){
@@ -29,8 +32,10 @@ module.exports = {
         }
     },
     async delete(id){
+        logger.debug("notesOperations delete");
         try{
             const deletedNote = await noteModel.findByIdAndDelete(id);
+            const user = await userOperations.deleteNote(deletedNote);
             return deletedNote;
         }catch(e){
             return e;

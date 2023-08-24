@@ -15,7 +15,7 @@ const NotesCard = ({ note, setNote }) => {
         <MKButton 
         onClick={() => { 
           setNote(note);
-           }} >show</MKButton>
+           }} >Edit</MKButton>
       </CardActions>
     </Card>
   )

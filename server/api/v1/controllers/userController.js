@@ -17,6 +17,7 @@ passwordSchema
 
 module.exports = {
   async register(req, res) {
+    logger.debug('userController register() start');
     const { email, password, name } = req.body;
     const passwordValidation = passwordSchema.validate(password, { list: true });
     const emailValidation = emailValidator.validate(email);
@@ -60,6 +61,7 @@ module.exports = {
   },
 
   async login(req, res) {
+    logger.debug('userController login() start');
     const { email, password } = req.body;
     if (email == undefined) {
       return res.status(500).send({
@@ -105,6 +107,7 @@ module.exports = {
       })
   },
   async update(req, res) {
+    logger.debug('userController update() start');
     const obj = req.body;
     const doc = await userOperations.update(obj);
     res.json({
@@ -112,6 +115,7 @@ module.exports = {
     });
   },
   async delete(req, res) {
+    logger.debug('userController delete() start');
     const obj = req.body;
     const doc = await userOperations.delete(obj);
     res.json({

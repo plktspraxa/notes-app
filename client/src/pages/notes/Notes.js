@@ -1,9 +1,8 @@
-
-import { Grid } from '@mui/material';
+import { Autocomplete, Fab, Grid, TextField } from '@mui/material';
 import MKBox from 'components/MKBox';
 import NavBar from 'pages/components/NavBar';
 import NotesCard from 'pages/notes/components/NotesCard';
-
+import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect, useState } from 'react'
 import { notesApi } from 'shared/services/notesApi';
 import SimpleModal from './components/SimpleModal';
@@ -14,9 +13,10 @@ const Notes = () => {
         showForm: false,
         note: {
             title: "",
-            content: ""
+            content: "",
         },
-        notes: []
+        notes: [],
+        newNote: false
     });
 
     const setShow = (show) => {
@@ -30,11 +30,13 @@ const Notes = () => {
         setState({
             ...state,
             note: note,
-            showForm: true
+            showForm: true,
+            newNote: false
         })
     }
 
     const getNotes = async () => {
+        console.log("Iam fetch calling");
         const response = await notesApi.readAll();
         const body = await response.json();
         console.log(body);
@@ -47,21 +49,65 @@ const Notes = () => {
 
     useEffect(() => {
         getNotes();
-    }, [])
+    }, [state.showForm])
 
     return (
         <MKBox>
             <NavBar>
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    <Grid item container xs={12} justifyContent="center" alignItems="center" >
+                        <Grid item xs={6}>
+                            <Autocomplete
+                                id="searchBar"
+                                disableClearable
+                                options={state.notes?.map((note, index) => ({ id: index, label: note.title }))}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Search notes"
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            type: 'search',
+                                        }}
+                                    />
+                                )}
+                                onChange={(e, note) => {
+                                    setNote(state.notes[note.id]);
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
                     {
                         state?.notes?.map((note) => (
                             <Grid item xs={2} key={note._id}>
-                                <NotesCard note = {note} setNote = {setNote}/>
+                                <NotesCard note={note} setNote={setNote} />
                             </Grid>
                         ))
                     }
                 </Grid>
-                <SimpleModal show={state.showForm} setShow={setShow} note={state.note} />
+                <SimpleModal show={state.showForm} setShow={setShow} note={state.note} newNote={state.newNote} />
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    sx={{
+                        position: "absolute",
+                        top: 15,
+                        right: 20
+                    }}
+                    onClick={() => {
+                        setState({
+                            ...state,
+                            showForm: true,
+                            newNote: true,
+                            note: {
+                                title: "",
+                                content: ""
+                            }
+                        })
+                    }}
+                >
+                    <AddIcon />
+                </Fab>
             </NavBar>
         </MKBox >
     )
