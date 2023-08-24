@@ -128,6 +128,7 @@ function NoteModal({ show = false, setShow, note = { title: "", content: "" }, n
                             <MKBox display="flex" alginItems="center" justifyContent="space-between" p={2}>
                                 <MKInput
                                     label = "Title"
+                                    inputProps={{ maxLength: 20}}
                                     helperText={state.titleHelper}
                                     error={state.titleError}
                                     sx={{

@@ -58,4 +58,4 @@ const ConfirmationPopUp = ({ show, setShow, setConfirmation , text}) => {
     )
 }
 
-export default ConfirmationPopUp
+export default ConfirmationPopUp;

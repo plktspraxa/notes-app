@@ -9,7 +9,7 @@ module.exports = {
         try {
             const userId = new mongoose.Types.ObjectId(req.userId)
             const note = { ...req.body, userId: userId };
-            note.content = note.content.slice(0, 200);
+            note.content = note.content.trimEnd().slice(0, 200);
             note.title = note.title.trimEnd();
             const newNote = await noteOperations.create(note);
             if (newNote && newNote._id) {

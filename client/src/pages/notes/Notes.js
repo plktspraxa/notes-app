@@ -80,12 +80,10 @@ const Notes = () => {
                         </Grid>
                     </Grid>
                     <Grid item xs={11}>
-                        <Masonry>
+                        <Masonry columns={4} spacing={2}>
                             {
                                 state?.notes?.map((note) => (
-                                    <Grid item xs={4} key={note._id}>
                                         <NotesCard note={note} setNote={setNote} />
-                                    </Grid>
                                 ))
                             }
                         </Masonry>
