@@ -127,6 +127,7 @@ function NoteModal({ show = false, setShow, note = { title: "", content: "" }, n
                         >
                             <MKBox display="flex" alginItems="center" justifyContent="space-between" p={2}>
                                 <MKInput
+                                    label = "Title"
                                     helperText={state.titleHelper}
                                     error={state.titleError}
                                     sx={{
@@ -147,6 +148,7 @@ function NoteModal({ show = false, setShow, note = { title: "", content: "" }, n
                                 display='flex'
                             >
                                 <MKInput
+                                    label = "Content"
                                     fullWidth
                                     color="secondary"
                                     helperText={`characters left : ${(state.charactersLeft) || (200 - note.content.length)}`}

@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect, useState } from 'react'
 import { notesApi } from 'shared/services/notesApi';
 import NoteModal from './components/NoteModal';
-
+import Masonry from '@mui/lab/Masonry';
 
 const Notes = () => {
     const [state, setState] = useState({
@@ -79,15 +79,17 @@ const Notes = () => {
                             />
                         </Grid>
                     </Grid>
-                    {
-                        state?.notes?.map((note) => (
-                            <Grid item xs={4} key={note._id}>
-                                <MKBox >
-                                    <NotesCard note={note} setNote={setNote} />
-                                </MKBox>
-                            </Grid>
-                        ))
-                    }
+                    <Grid item xs={11}>
+                        <Masonry>
+                            {
+                                state?.notes?.map((note) => (
+                                    <Grid item xs={4} key={note._id}>
+                                        <NotesCard note={note} setNote={setNote} />
+                                    </Grid>
+                                ))
+                            }
+                        </Masonry>
+                    </Grid>
                 </Grid>
                 <NoteModal show={state.showForm} setShow={setShow} note={state.note} newNote={state.newNote} />
                 <Fab
